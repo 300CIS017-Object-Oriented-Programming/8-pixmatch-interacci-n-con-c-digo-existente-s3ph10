@@ -45,3 +45,55 @@ Detalla en este markdown lo siguiente:
 - **Métodos Importantes:** Enumera los métodos principales para cada clase. Incluye una descripción de cuál sería la utilidad de cada método
 - **Imagen del UML del diagrama de clases**  Adjunta una imagen del UML del diagrama de clases como una forma visual de planificar y entender la estructura de las clases, métodos, atributos y relaciones que podría tener una versión mejorada del código fuente.
 - **Organización de archivos:** Propon una estructura de organización de los archivos de este proyecto para que no queden todos en la raiz principal. Investiga cuáles podrían ser buenas formas de organizar los directorios y a partir de tu investigación indica qué directorios crearías y cómo los organizarías. 
+
+
+
+# Mejoras para pasar a POO y propuesta
+
+
+### Clases a Definir:
+
+1. **PixMatchGame:**
+   - Propósito: Esta clase se encargaría de la lógica del juego PixMatch. Sería responsable de gestionar el estado del juego, manejar las interacciones del usuario y determinar cuándo se ha completado el juego.
+   - Justificación: Es útil tener una clase dedicada a la lógica del juego para separar las preocupaciones y mantener un diseño modular y cohesivo.
+
+2. **LeaderboardManager:**
+   - Propósito: Esta clase se encargaría de gestionar el tablero de clasificación del juego. Sería responsable de agregar puntajes, recuperar los mejores puntajes y actualizar la clasificación.
+   - Justificación: Separar la gestión del tablero de clasificación en una clase independiente ayuda a mantener un código más organizado y facilita la reutilización de este componente en otros proyectos o partes del programa.
+
+3. **UIManager:**
+   - Propósito: Esta clase se encargaría de manejar la interfaz de usuario del juego. Sería responsable de mostrar información al usuario, procesar las entradas del usuario y actualizar la interfaz según el estado del juego.
+   - Justificación: La separación de la lógica de la interfaz de usuario en una clase aparte mejora la claridad del código y facilita la implementación de diferentes interfaces de usuario (por ejemplo, una interfaz gráfica o una interfaz de línea de comandos).
+
+### Métodos Importantes:
+
+1. **PixMatchGame:**
+   - `start_game()`: Inicia el juego y controla el flujo del mismo.
+   - `check_match(card1, card2)`: Comprueba si las dos cartas seleccionadas por el jugador son iguales.
+   - `update_score(score)`: Actualiza la puntuación del jugador.
+   
+2. **LeaderboardManager:**
+   - `add_score(player, score)`: Agrega un nuevo puntaje al tablero de clasificación.
+   - `get_top_scores(n)`: Recupera los mejores n puntajes del tablero de clasificación.
+   - `update_leaderboard()`: Actualiza el tablero de clasificación con los nuevos puntajes.
+   
+3. **UIManager:**
+   - `display_board()`: Muestra el tablero de juego.
+   - `show_message(message)`: Muestra un mensaje al jugador.
+   - `get_user_input()`: Obtiene la entrada del usuario.
+
+### Organización de archivos:
+
+- **/src:** Contendría todos los archivos fuente del proyecto.
+  - **/game:** Directorio para los archivos relacionados con la lógica del juego.
+    - `pix_match_game.py`: Clase PixMatchGame.
+    - `leaderboard_manager.py`: Clase LeaderboardManager.
+  - **/ui:** Directorio para los archivos relacionados con la interfaz de usuario.
+    - `ui_manager.py`: Clase UIManager.
+  - **/utils:** Directorio para los archivos de utilidades generales.
+    - `constants.py`: Constantes del juego.
+    - Otros archivos de utilidades según sea necesario.
+- **/data:** Contendría los datos del juego, como el tablero de clasificación.
+- **/docs:** Contendría documentación relacionada con el proyecto.
+- **/tests:** Contendría los archivos de pruebas unitarias para el código del proyecto.
+
