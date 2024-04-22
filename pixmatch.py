@@ -10,7 +10,7 @@ from streamlit_autorefresh import st_autorefresh
 st.set_page_config(page_title = "PixMatch", page_icon="🕹️", layout = "wide", initial_sidebar_state = "expanded")
 
 vDrive = os.path.splitdrive(os.getcwd())[0]
-if vDrive == "C:": vpth = "C:/Users/Shawn/dev/utils/pixmatch/"   # local developer's disc
+if vDrive == "C:": vpth = "./"   # local developer's disc
 else: vpth = "./"
 
 sbe = """<span style='font-size: 140px;
@@ -61,46 +61,75 @@ def ReduceGapFromPageTop(wch_section = 'main page'):
     elif wch_section == 'all': 
         st.markdown(" <style> div[class^='block-container'] { padding-top: 2rem; } </style> ", True) # main area
         st.markdown(" <style> div[class^='st-emotion-cache-10oheav'] { padding-top: 0rem; } </style> ", True) # sidebar
-    
+
+
 def Leaderboard(what_to_do):
+    """
+    Leaderboard(what_to_do)
+
+    Realiza operaciones en el archivo del tablero de clasificación según la acción especificada.
+
+    Parámetros:
+    - what_to_do (str): La acción que se debe realizar en el tablero de clasificación. Puede ser 'create', 'write' o 'read'.
+
+    Detalles:
+    - Si what_to_do es 'create', crea un archivo de tablero de clasificación vacío si no existe.
+    - Si what_to_do es 'write', escribe la puntuación más alta del jugador en el archivo de tablero de clasificación.
+    - Si what_to_do es 'read', lee el archivo de tablero de clasificación y muestra las puntuaciones más altas en la interfaz.
+
+    """
     if what_to_do == 'create':
+        # Crear un archivo de tablero de clasificación si no existe y el nombre del jugador está proporcionado
         if mystate.GameDetails[3] != '':
-            if os.path.isfile(vpth + 'leaderboard.json') == False:
+            if not os.path.isfile(vpth + 'leaderboard.json'):
                 tmpdict = {}
-                json.dump(tmpdict, open(vpth + 'leaderboard.json', 'w'))     # write file
+                json.dump(tmpdict, open(vpth + 'leaderboard.json', 'w'))  # write file
 
     elif what_to_do == 'write':
-        if mystate.GameDetails[3] != '':       # record in leaderboard only if player name is provided
+        # Escribir la puntuación más alta del jugador en el archivo de tablero de clasificación si el nombre del jugador está proporcionado
+        if mystate.GameDetails[3] != '':
             if os.path.isfile(vpth + 'leaderboard.json'):
-                leaderboard = json.load(open(vpth + 'leaderboard.json'))    # read file
+                leaderboard = json.load(open(vpth + 'leaderboard.json'))  # read file
                 leaderboard_dict_lngth = len(leaderboard)
-                    
-                leaderboard[str(leaderboard_dict_lngth + 1)] = {'NameCountry': mystate.GameDetails[3], 'HighestScore': mystate.myscore}
-                leaderboard = dict(sorted(leaderboard.items(), key=lambda item: item[1]['HighestScore'], reverse=True))  # sort desc
 
-                if len(leaderboard) > 3:
-                    for i in range(len(leaderboard)-3): leaderboard.popitem()    # rmv last kdict ey
+                leaderboard[str(leaderboard_dict_lngth + 1)] = {'NameCountry': mystate.GameDetails[3],
+                                                                'HighestScore': mystate.myscore}
+                leaderboard = dict(
+                    sorted(leaderboard.items(), key=lambda item: item[1]['HighestScore'], reverse=True))  # sort desc
 
-                json.dump(leaderboard, open(vpth + 'leaderboard.json', 'w'))     # write file
+                if len(leaderboard) > 4:
+                    for i in range(len(leaderboard) - 4): leaderboard.popitem()  # rmv last kdict ey
+
+                json.dump(leaderboard, open(vpth + 'leaderboard.json', 'w'))  # write file
 
     elif what_to_do == 'read':
-        if mystate.GameDetails[3] != '':       # record in leaderboard only if player name is provided
+        # Leer el archivo de tablero de clasificación y mostrar las puntuaciones más altas en la interfaz
+        if mystate.GameDetails[3] != '':
             if os.path.isfile(vpth + 'leaderboard.json'):
-                leaderboard = json.load(open(vpth + 'leaderboard.json'))    # read file
-                    
-                leaderboard = dict(sorted(leaderboard.items(), key=lambda item: item[1]['HighestScore'], reverse=True))  # sort desc
+                leaderboard = json.load(open(vpth + 'leaderboard.json'))  # read file
 
-                sc0, sc1, sc2, sc3 = st.columns((2,3,3,3))
+                leaderboard = dict(
+                    sorted(leaderboard.items(), key=lambda item: item[1]['HighestScore'], reverse=True))  # sort desc
+
+                sc0, sc1, sc2, sc3, sc4 = st.columns((2, 3, 3, 3, 3))
                 rknt = 0
                 for vkey in leaderboard.keys():
                     if leaderboard[vkey]['NameCountry'] != '':
                         rknt += 1
                         if rknt == 1:
                             sc0.write('🏆 Past Winners:')
-                            sc1.write(f"🥇 | {leaderboard[vkey]['NameCountry']}: :red[{leaderboard[vkey]['HighestScore']}]")
-                        elif rknt == 2: sc2.write(f"🥈 | {leaderboard[vkey]['NameCountry']}: :red[{leaderboard[vkey]['HighestScore']}]")
-                        elif rknt == 3: sc3.write(f"🥈 | {leaderboard[vkey]['NameCountry']}: :red[{leaderboard[vkey]['HighestScore']}]")
+                            sc1.write(
+                                f"🥇 | {leaderboard[vkey]['NameCountry']}: :red[{leaderboard[vkey]['HighestScore']}]")
+                        elif rknt == 2:
+                            sc2.write(
+                                f"🥈 | {leaderboard[vkey]['NameCountry']}: :red[{leaderboard[vkey]['HighestScore']}]")
+                        elif rknt == 3:
+                            sc3.write(
+                                f"🥈 | {leaderboard[vkey]['NameCountry']}: :red[{leaderboard[vkey]['HighestScore']}]")
 
+                        elif rknt == 4:
+                            sc4.write(
+                                f"4 | {leaderboard[vkey]['NameCountry']}: :red[{leaderboard[vkey]['HighestScore']}]")
 def InitialPage():
     with st.sidebar:
         st.subheader("🖼️ Pix Match:")
@@ -226,6 +255,7 @@ def ScoreEmoji():
     elif 6 <= mystate.myscore <= 10: return '😊'
     elif mystate.myscore > 10: return '😁'
 
+
 def NewGame():
     ResetBoard()
     total_cells_per_row_or_col = mystate.GameDetails[2]
@@ -240,89 +270,103 @@ def NewGame():
         aftimer = st_autorefresh(interval=(mystate.GameDetails[1] * 1000), key="aftmr")
         if aftimer > 0: mystate.myscore -= 1
 
-        st.info(f"{ScoreEmoji()} Score: {mystate.myscore} | Pending: {(total_cells_per_row_or_col ** 2)-len(mystate.expired_cells)}")
+        st.info(
+            f"{ScoreEmoji()} Score: {mystate.myscore} | Pending: {(total_cells_per_row_or_col ** 2) - len(mystate.expired_cells)}")
 
         st.markdown(horizontal_bar, True)
         if st.button(f"🔙 Return to Main Page", use_container_width=True):
             mystate.runpage = Main
             st.rerun()
-    
+
     Leaderboard('read')
     st.subheader("Picture Positions:")
     st.markdown(horizontal_bar, True)
 
-    # Set Board Dafaults
-    st.markdown("<style> div[class^='css-1vbkxwb'] > p { font-size: 1.5rem; } </style> ", unsafe_allow_html=True)  # make button face big
+    # Set Board Defaults
+    st.markdown("<style> div[class^='css-1vbkxwb'] > p { font-size: 1.5rem; } </style> ",
+                unsafe_allow_html=True)  # make button face big
 
-    for i in range(1, (total_cells_per_row_or_col+1)):
-        tlst = ([1] * total_cells_per_row_or_col) + [2] # 2 = rt side padding
+    for i in range(1, (total_cells_per_row_or_col + 1)):
+        tlst = ([1] * total_cells_per_row_or_col) + [2]  # 2 = rt side padding
         globals()['cols' + str(i)] = st.columns(tlst)
-    
-    for vcell in range(1, (total_cells_per_row_or_col ** 2)+1):
+
+    for vcell in range(1, (total_cells_per_row_or_col ** 2) + 1):
         if 1 <= vcell <= (total_cells_per_row_or_col * 1):
             arr_ref = '1'
             mval = 0
 
-        elif ((total_cells_per_row_or_col * 1)+1) <= vcell <= (total_cells_per_row_or_col * 2):
+        elif ((total_cells_per_row_or_col * 1) + 1) <= vcell <= (total_cells_per_row_or_col * 2):
             arr_ref = '2'
             mval = (total_cells_per_row_or_col * 1)
 
-        elif ((total_cells_per_row_or_col * 2)+1) <= vcell <= (total_cells_per_row_or_col * 3):
+        # Resto de los bloques elif para los otros rangos de celdas... no te saltes cosas porfa
+        elif ((total_cells_per_row_or_col * 2) + 1) <= vcell <= (total_cells_per_row_or_col * 3):
             arr_ref = '3'
             mval = (total_cells_per_row_or_col * 2)
 
-        elif ((total_cells_per_row_or_col * 3)+1) <= vcell <= (total_cells_per_row_or_col * 4):
+        elif ((total_cells_per_row_or_col * 3) + 1) <= vcell <= (total_cells_per_row_or_col * 4):
             arr_ref = '4'
             mval = (total_cells_per_row_or_col * 3)
 
-        elif ((total_cells_per_row_or_col * 4)+1) <= vcell <= (total_cells_per_row_or_col * 5):
+        elif ((total_cells_per_row_or_col * 4) + 1) <= vcell <= (total_cells_per_row_or_col * 5):
             arr_ref = '5'
             mval = (total_cells_per_row_or_col * 4)
 
-        elif ((total_cells_per_row_or_col * 5)+1) <= vcell <= (total_cells_per_row_or_col * 6):
+        elif ((total_cells_per_row_or_col * 5) + 1) <= vcell <= (total_cells_per_row_or_col * 6):
             arr_ref = '6'
             mval = (total_cells_per_row_or_col * 5)
 
-        elif ((total_cells_per_row_or_col * 6)+1) <= vcell <= (total_cells_per_row_or_col * 7):
+        elif ((total_cells_per_row_or_col * 6) + 1) <= vcell <= (total_cells_per_row_or_col * 7):
             arr_ref = '7'
             mval = (total_cells_per_row_or_col * 6)
 
-        elif ((total_cells_per_row_or_col * 7)+1) <= vcell <= (total_cells_per_row_or_col * 8):
+        elif ((total_cells_per_row_or_col * 7) + 1) <= vcell <= (total_cells_per_row_or_col * 8):
             arr_ref = '8'
             mval = (total_cells_per_row_or_col * 7)
 
-        elif ((total_cells_per_row_or_col * 8)+1) <= vcell <= (total_cells_per_row_or_col * 9):
+        elif ((total_cells_per_row_or_col * 8) + 1) <= vcell <= (total_cells_per_row_or_col * 9):
             arr_ref = '9'
             mval = (total_cells_per_row_or_col * 8)
 
-        elif ((total_cells_per_row_or_col * 9)+1) <= vcell <= (total_cells_per_row_or_col * 10):
+        elif ((total_cells_per_row_or_col * 9) + 1) <= vcell <= (total_cells_per_row_or_col * 10):
             arr_ref = '10'
             mval = (total_cells_per_row_or_col * 9)
-            
-        globals()['cols' + arr_ref][vcell-mval] = globals()['cols' + arr_ref][vcell-mval].empty()
+
+        globals()['cols' + arr_ref][vcell - mval] = globals()['cols' + arr_ref][vcell - mval].empty()
         if mystate.plyrbtns[vcell]['isPressed'] == True:
             if mystate.plyrbtns[vcell]['isTrueFalse'] == True:
-                globals()['cols' + arr_ref][vcell-mval].markdown(pressed_emoji.replace('|fill_variable|', '✅️'), True)
-            
+                globals()['cols' + arr_ref][vcell - mval].markdown(pressed_emoji.replace('|fill_variable|', '✅️'), True)
+
             elif mystate.plyrbtns[vcell]['isTrueFalse'] == False:
-                globals()['cols' + arr_ref][vcell-mval].markdown(pressed_emoji.replace('|fill_variable|', '❌'), True)
+                globals()['cols' + arr_ref][vcell - mval].markdown(pressed_emoji.replace('|fill_variable|', '❌'), True)
 
         else:
             vemoji = mystate.plyrbtns[vcell]['eMoji']
-            globals()['cols' + arr_ref][vcell-mval].button(vemoji, on_click=PressedCheck, args=(vcell, ), key=f"B{vcell}")
+            globals()['cols' + arr_ref][vcell - mval].button(vemoji, on_click=PressedCheck, args=(vcell,),
+                                                             key=f"B{vcell}")
 
-    st.caption('') # vertical filler
+    st.caption('')  # vertical filler
     st.markdown(horizontal_bar, True)
 
-    if len(mystate.expired_cells) == (total_cells_per_row_or_col ** 2):
+    # Verificar si se alcanzó el límite de errores permitidos
+    max_errors = (total_cells_per_row_or_col ** 2) // 2 + 1
+    if mystate.myscore < -max_errors:
+        st.error("Game Over! You have reached the maximum number of errors. Please return to the main page to start a new game.")
+
         Leaderboard('write')
 
-        if mystate.myscore > 0: st.balloons()
-        elif mystate.myscore <= 0: st.snow()
+        if mystate.myscore > 0:
+            st.balloons()
+        elif mystate.myscore <= 0:
+            st.snow()
 
         tm.sleep(5)
         mystate.runpage = Main
         st.rerun()
+
+
+
+
 
 def Main():
     st.markdown('<style>[data-testid="stSidebar"] > div:first-child {width: 310px;}</style>', unsafe_allow_html=True,)  # reduce sidebar width
@@ -330,6 +374,7 @@ def Main():
 
     InitialPage()
     with st.sidebar:
+        #Controles de barra lateral: Es una entrada de informacion que permite al jugador sleccionar la dificultad y proporcionar un texto
         mystate.GameDetails[0] = st.radio('Difficulty Level:', options=('Easy', 'Medium', 'Hard'), index=1, horizontal=True, )
         mystate.GameDetails[3] = st.text_input("Player Name, Country", placeholder='Shawn Pereira, India', help='Optional input only for Leaderboard')
 
